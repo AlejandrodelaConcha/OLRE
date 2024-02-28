@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------------------------------------------
-# Title:  aux_functions
+# Title:  Offline_LRE
 # Author(s): Alejandro de la Concha
 # Initial version:  2021-05-17
 # Last modified:    2024-02-28              
