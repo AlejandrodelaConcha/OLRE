@@ -1,22 +1,19 @@
 # -----------------------------------------------------------------------------------------------------------------
 # Title:  aux_functions
-# Author(s):  
+# Author(s): Alejandro de la Concha
 # Initial version:  2020-05-17
-# Last modified:    2020-05-17              
-# This version:     2020-05-17
-
+# Last modified:    2024-02-28              
+# This version:     2024-05-28
 # -----------------------------------------------------------------------------------------------------------------
 # Objective(s): The goal of this code is to define the functions associated with the Gaussian Kernel
 # -----------------------------------------------------------------------------------------------------------------
 # Library dependencies: numpy,numba 
 # -----------------------------------------------------------------------------------------------------------------
-# Key words: OCKGD. f-divergence, Likelihood-ratio estimation 
-# ---------
-
+# Key words: Gaussian Kernel, coherence, Kernel Methods 
+# ---------------------------------------------------------------------------------------------------------
 
 import numpy as np
 from numba import njit,jit
-
 
 @jit(nopython=True)
 def calc_dist(A,B,sqrt=False):
@@ -52,8 +49,12 @@ def calc_dist(A,B,sqrt=False):
   return dist
 
 @jit(nopython=True)
-def calc_dist_L1(A,B,sqrt=False):
+def calc_dist_L1(A,,sqrt=False):
     ######### This function is a fast version of the distance between elements of two matrices
+    ## Input: A,B: matrices of size M,n and K,n
+    ## sqrt: Whether to obtain the square root of the distance
+    ## Output: matrix of size MxK with the distance between the rows of A and B.
+         
     N=A.shape[0]
     M=B.shape[0]
     dist=np.zeros((N,M))
@@ -125,7 +126,11 @@ class Gauss_Kernel(object):
         self.dictionary=np.vstack((self.dictionary,x))
         self.n=len( self.dictionary)
      
-    def delete_from_dictionary(self,index):      
+    def delete_from_dictionary(self,index):  
+    ##### Function to eliminate a given index from the dictionary 
+    ## Input
+    # index: position of the point to eliminate from the dictionary 
+        
         if index==0:
             self.dictionary=1.*self.dictionary[1:]
         elif index>=self.n-1:
@@ -148,6 +153,11 @@ class Gauss_Kernel(object):
         return np.exp(distances)
     
     def get_internal_coherences(self):
+    ### This function computes the coherence of all elements of the dictionary with the respect to the
+    ## the dictionary without that element. 
+    
+    ## Output: 
+    ## coherences: a vector where each entry in the coherence of that specific element in the dictionary 
         coherences=[]
         aux_coherence=self.k(self.dictionary[0])[0]
         coherences.append(np.max(np.abs(aux_coherence[1:])))
