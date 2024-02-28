@@ -1,9 +1,17 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jul 25 12:48:10 2022
+# -----------------------------------------------------------------------------------------------------------------
+# Title:  aux_functions
+# Author(s): Alejandro de la Concha
+# Initial version:  2021-05-17
+# Last modified:    2024-02-28              
+# This version:     2024-05-28
+# -----------------------------------------------------------------------------------------------------------------
+# Objective(s): The goal of this function is to provide implementations of KLIEP and RULSIF
+# -----------------------------------------------------------------------------------------------------------------
+# Library dependencies: numpy,numba 
+# -----------------------------------------------------------------------------------------------------------------
+# Key words: KLIEP,RULSIF
+# ---------------------------------------------------------------------------------------------------------
 
-@author: 33768
-"""
 import numpy as np
 import copy
 from numpy import linalg as LA
@@ -25,15 +33,16 @@ def r_estimate_offline(x,Kernel,theta):
 
     
 class KLIEP():
-########## Class implementing the GULSIF f-divergence estimation 
-    def __init__(self,data_ref,data_test,k_cross_validation=5,tol=1e-2,lr=1e-5,all_test=False,verbose=False):     
+########## Class implementing KLIEP 
+# Based on the paper "Direct importance estimation with model selection and its application to covariate shift adaptation."  Sugiyama, M 2007
+    def __init__(self,data_ref,data_test,k_cross_validation=5,tol=1e-2,lr=1e-5,verbose=False):     
     
     ## Input
     # data_ref: data points representing the distribution p(.)
     # data_test: data points representing the distribution q(.) 
     # tol: level of accepted tolerence in the estimation
     # k_cross_validation: number of splits to do for cross validation 
-    # tol= tolarated error 
+    # tol= tolerated error 
     # lr: learning rate associated with the optimization problem
     # verbose: function to print the fitting results 
         
@@ -46,9 +55,8 @@ class KLIEP():
         self.kernel=self.model_selection(kernel_1,verbose=verbose)
 
      
-    def initializalize_kernel(self,all_test=False):
-    ##### This function implements the method described in  Richard et al. (2009) for each of the nodes to then concatenate the observations
-       
+    def initializalize_kernel(self):
+
     ## Output
     # kernel_1: A initialized kernel with a given dictionary 
         if all_test:
@@ -60,13 +68,10 @@ class KLIEP():
                 index=np.random.choice(len(self.data_test),replace=False,size=100)
                 sigma=get_sigma(self.data_test[index])
                 dictionary=1*self.data_test[index]
-        #    dictionary=1.*self.data_test
             else:
                 sigma=get_sigma(self.data_test)
                 dictionary=1*self.data_test
-            
-            
-            
+       
         if sigma==0:
             sigma=1e-6
                 
@@ -75,14 +80,12 @@ class KLIEP():
         return kernel_1
     
     def fit(self,data_ref=None,data_test=None,kernel=None,verbose=False): 
-    #### Function estimating the theta parameter for a given set of observations comming from p_v(.) and p_v'(.) 
-    
+    #### Function estimating the theta parameter for a given set of observations comming from p(.) and q(.)    
     ## Input
-    # data_ref: data points representing the distribution p_v(.)
-    # data_test: data points representing the distribution p_v'(.) 
+    # data_ref: data points representing the distribution p(.)
+    # data_test: data points representing the distribution q(.) 
     # kernel: kernel to be used in the method
-    # verbose: whether or not to print the results of the optimization process 
-    
+    # verbose: whether or not to print the results of the optimization process    
     ## Output
     # theta: list with n_nodes elements, each element is the estimated parameter for the node v 
     
@@ -137,12 +140,11 @@ class KLIEP():
         return theta
     
     def model_selection(self,kernel,verbose=False):
-               
+        #### This function identifies the optimal hyperparameters related to the data         
         ###### Input
         # kernel: kernel to be used in the method
-        # verbose: whether or not to print intermediate steps 
-        
-        ###### Output
+        # verbose: whether or not to print intermediate steps      
+        #### Output
         # kernel_: kernel initialized with the selected dictionary and the optimal value of alpha
  
         sigma_list=np.array([0.6,0.8,1.0,1.2,1.4])*kernel.sigma
@@ -192,12 +194,10 @@ class KLIEP():
         return  kernel_
            
     def KL_divergence(self,data_ref=None,data_test=None,theta=None):
-    ####### Function estimating the Kulback Liebler Divergence at the node level 
-
+    #### Function estimating the Kulback Liebler Divergence 
     ## Input
     # data_ref: data points representing the distribution p(.)
     # data_test: data points representing the distribution q(.)
-
     ## Output 
     # score: Pearson Divergence at the node level 
     
@@ -211,11 +211,12 @@ class KLIEP():
         return score
     
     def r_(self,theta,data):
-        ######## Likelihood ratio estimation 
-        
-        ##### Input
+        ######## Likelihood ratio estimation  
+        #### Input
         # theta: estimated parameter
         # data: datapoints to evaluate in the likelihood ratios
+        #### Output
+        # ratio: likelihood-ratio  evaluated at the points n data
         
         phi=self.kernel.k_V(transform_data(data))
         ratio=phi.dot(theta)
@@ -227,7 +228,9 @@ class KLIEP():
 
 
 class RULSIF():
-########## Class implementing the RULSIF f-divergence estimator 
+########## Class implementing RULSIF
+# Based on the paper "Relative density-ratio estimation for robust distribution comparison."  Yamada et al., 2011
+
     def __init__(self,data_ref,data_test,alpha=0.1,verbose=False):     
     
     ## Input
@@ -268,14 +271,12 @@ class RULSIF():
         return kernel_1
     
     def fit(self,data_ref=None,data_test=None,kernel=None,gamma=None): 
-    #### Function estimating the theta parameter for a given set of observations comming from p_v(.) and p_v'(.) 
-    
+    #### Function estimating the theta parameter for a given set of observations comming from p(.) and q(.)  
     ## Input
     # data_ref: data points representing the distribution p_v(.)
     # data_test: data points representing the distribution p_v'(.) 
     # kernel: kernel to be used in the method
-    # gamma: penalization constant related with the sparsness of the parameters
-    
+    # gamma: penalization constant related with the sparsness of the parameters   
     ## Output
     # theta: list with n_nodes elements, each element is the estimated parameter for the node v 
     
@@ -310,17 +311,14 @@ class RULSIF():
         return theta
     
     def model_selection(self,kernel,verbose=False):
-        
+        #### This function identifies the optimal hyperparameters related to the data     
         ###### Input
         # kernel: kernel to be used in the method
-        # verbose: whether or not to print intermediate steps 
-        
+        # verbose: whether or not to print intermediate steps  
         ###### Output
-        # kernel_: kernel initialized with the selected dictionary and the optimal value of alpha
-        
+        # kernel_: kernel initialized with the selected dictionary and the optimal value of alpha    
         
         sigma_list=np.array([0.6,0.8,1.0,1.2,1.4])*kernel.sigma
-       # gamma_list = np.logspace(-6,1,6)*
         max_ = -np.inf
         j_scores_ = {}
         best_params_={}
@@ -391,15 +389,12 @@ class RULSIF():
         
            
     def PE_divergence(self,data_ref=None,data_test=None):
-    ####### Function estimating the Pearson Divergence at the node level 
-
+    ####### Function estimating the Pearson Divergence
     ## Input
     # data_ref: data points representing the distribution p_v'(.)
     # data_test: data points representing the distribution p_v(.)
-
     ## Output 
-    # score: Pearson Divergence at the node level 
-          
+    # score: Pearson Divergence 
         phi_test=self.kernel.k_V(data_test)
         phi_ref=self.kernel.k_V(data_ref)
   
@@ -418,12 +413,12 @@ class RULSIF():
         return score
     
     def r_(self,theta,data):
-        
-        ######## Likelihood ratio estimation 
-        
-        ##### Input
+        ######## Likelihood ratio estimation  
+        #### Input
         # theta: estimated parameter
         # data: datapoints to evaluate in the likelihood ratios
+        #### Output
+        # ratio: likelihood-ratio  evaluated at the points n data
         
         phi=self.kernel.k_V(transform_data(data))
         ratio=phi.dot(theta)
@@ -436,8 +431,7 @@ def klieps(data_ref,data_test):
     ### Input
     ## data_ref: data from the distribution x~P
     ## data_test: data from the distribution x~Q
-    ## n: number of observations used in the initialization 
-    
+
     ### Output 
     ## list_dictionaries:list of the used dictionaries at every time t
     ## list_thetas:list of parameters estimated at everytime time t
@@ -463,8 +457,7 @@ def rulsifs(data_ref,data_test,alpha=0.1):
     ### Input 
     ## data_ref: data from the distribution x~P
     ## data_test: data from the distribution x~Q
-    ## n: number of observations used in the initialization 
-    
+
     ### Output 
     ## list_dictionaries:list of the used dictionaries at every time t
     ## list_thetas:list of parameters estimated at everytime time t
