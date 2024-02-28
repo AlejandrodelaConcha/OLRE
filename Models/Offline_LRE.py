@@ -5,7 +5,7 @@
 # Last modified:    2024-02-28              
 # This version:     2024-05-28
 # -----------------------------------------------------------------------------------------------------------------
-# Objective(s): The goal of this function is to provide implementations of KLIEP and RULSIF
+# Objective(s): The goal of this code is to provide implementations of KLIEP and RULSIF
 # -----------------------------------------------------------------------------------------------------------------
 # Library dependencies: numpy,numba 
 # -----------------------------------------------------------------------------------------------------------------
