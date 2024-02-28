@@ -1,16 +1,16 @@
 # -----------------------------------------------------------------------------------------------------------------
 # Title:  estimate_errors
-# Author(s):  
+# Author(s): Alejandro de la Concha
 # Initial version:  2022-02-12
 # Last modified:    2022-02-12             
 # This version:     2022-02-12
 # -----------------------------------------------------------------------------------------------------------------
-# Objective(s): This function computes the convergence metrics associated with each of the online likelihood-ratio estimators 
+# Objective(s): This function computes the convergence rates for each of the likelihood-ratio estimators studied in the paper
 # -----------------------------------------------------------------------------------------------------------------
 # Library dependencies: numpy,Models.aux_functions
 # -----------------------------------------------------------------------------------------------------------------
 # Key words:  likelihood-ratio estimation, Pearson-Divergence estimatation, error_values 
-# ------------------
+# -------------------------------------------------------------------------------------------------------------------------
 
 import numpy as np 
 from Models import *
@@ -113,9 +113,7 @@ def error_graph_offline(data_ref_validation,data_test_validation,list_dictionari
              
             if alpha>0:
                  r_test=1.*phi_test
-              #   r_test[r_test<0]=0
                  r_ref=1.*phi_ref
-              #   r_ref[r_ref<0]=0
                  L_f_t=-1.0*np.mean(r_test)+0.5*((1-alpha)*np.mean(r_ref**2)+alpha*np.mean(r_test**2))
                  L_f=-1.0*np.mean(r_l_test)+0.5*((1-alpha)*np.mean(r_l_ref**2)+alpha*np.mean(r_l_test**2))
             else:
@@ -134,7 +132,20 @@ def error_graph_offline(data_ref_validation,data_test_validation,list_dictionari
     return error_cost_function,error_divergence
 
 
-def estimate_errors_online(results_directory,list_dictionaries,list_theta,list_kernel,experiment,alpha,r,learning_rate=None):
+def estimate_errors_online(results_directory,list_dictionaries,list_theta,list_kernel,experiment,alpha,r):
+    ######## This function generates the convergence rates for OLRE over multiple instances on the same experiment    
+    ########### Input 
+    ## results_directory: the name of the folder where the results will be stored
+    ## list_dictionaries: the dictionaries related to all the tested istances
+    ## list_thetas: estimated parameters via OLRE
+    ## list_kernel: the kernel used in each instance
+    ## experiment: the experiment that was used to produce the results 
+    ## alpha: the regularization parameter of the LR, it should be 0<\alpha<1
+    ## r: the smoothness parameter should be between 1/2 and 1.
+    
+    ########### Output 
+    ## error_cost_function: difference between the cost function evaluated at the estimated likelihood-ratio and the real likelihood ratio
+    ## error_divergence: the L2 distance between the estimated likelihood-ratio and the real likelihood-ratio
     
     dictionary="dynamic"
     file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_r{r}_"+dictionary+f"_learning_rate_Error"
@@ -190,6 +201,17 @@ def estimate_errors_online(results_directory,list_dictionaries,list_theta,list_k
 
 
 def estimate_errors_offline(results_directory,list_dictionaries,list_thetas,list_sigmas,experiment,alpha=None,method="KLIEP"):
+    #### This function generates the convergence rates for offline methods over multiple instances on the same experiment  
+    ########### Input 
+    ## results_directory: the name of the folder where the results will be stored
+    ## list_dictionaries: the dictionaries related to all the tested istances
+    ## list_thetas: estimated parameters via OLRE
+    ## experiment: the experiment that was used to produce the results 
+    ## alpha: the regularization parameter of the LR, it should be 0<\alpha<1
+    ## method: the offline method to evaluate ("KLIEP" or "RULSIF")   
+    #### Output 
+    ## error_cost_function: difference between the cost function evaluated at the estimated likelihood-ratio and the real likelihood ratio
+    ## error_divergence: the L2 distance between the estimated likelihood-ratio and the real likelihood-ratio
     
     list_errors=[]
     list_L2_distance=[]
