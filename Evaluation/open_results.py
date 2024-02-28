@@ -51,14 +51,10 @@ def open_results_offline(results_directory,experiment,method,alpha=None):
     # method= the offline method to evaluate "RULSIF" vs KLIEP
     # alpha= the regularization parameter 
     ### Output
-    # list_dictionaries_kliep= the list of the elements of each of the dictionaries 
-    # list_thetas_klie= the list of fitted parameters with the model KLIEP
-    # list_sigmas_kliep= the list of width parameters associated with the kernel
-    # list_dictionaries_rulsif= the list of the elements of each of the dictionaries 
-    # list_thetas_rulsif= the list of fitted parameters with the model RULSIF
-    # list_sigmas_rulsif= the list of width parameters associated with the kernel
-    
-    
+    # list_dictionaries= the list of the elements of each of the dictionaries 
+    # list_thetas= the list of fitted parameters with the model 
+    # list_sigmas= the list of width parameters associated with the kernel
+     
     if method=="KLIEP":
         file_name=results_directory+f"Experiment_{experiment}_kliep"
         file_name=file_name.replace(".","")
