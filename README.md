@@ -14,11 +14,12 @@ mpl_toolkits
 numba     0.55.2
 
 ## Code Organization
-### Experiments: contains the elements related to the reported experiment to the paper
-### Model: containts the algorithms described in the papers as well as auxiliar functions related with the simulation of different scenarios.
-### Results: the folder where the results can be stored
-### example.ipnyb: jupyter notebook showing how to use the methods
-### run_experiments.py,generate_valuation_metrics.py,generate_plots.py: these codes generate the required elements to produce similar results to the ones reported to the paper 
+
+1) Experiments: contains the elements related to the reported experiment to the paper
+2) Model: containts the algorithms described in the papers as well as auxiliar functions related with the simulation of different scenarios.
+3) Results: the folder where the results can be stored
+4) example.ipnyb: jupyter notebook showing how to use the methods
+5) run_experiments.py,generate_valuation_metrics.py,generate_plots.py: these codes generate the required elements to produce similar results to the ones reported to the paper 
 
 ## How to generate the results reported on the paper ? 
 
