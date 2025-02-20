@@ -2,8 +2,8 @@
 # Title:  Offline_LRE
 # Author(s): Alejandro de la Concha
 # Initial version:  2021-05-17
-# Last modified:    2024-02-28              
-# This version:     2024-05-28
+# Last modified:    2025-02-17             
+# This version:     2025-02-17  
 # -----------------------------------------------------------------------------------------------------------------
 # Objective(s): This code provides the implementation of OLRE
 # -----------------------------------------------------------------------------------------------------------------
@@ -32,7 +32,10 @@ def r_estimate(x,Kernel,dictionary,theta):
     phi=Kernel.k_V(x).dot(theta)
     return phi
 
-def OLRE(data_ref,data_test,t_0,learning_rate=None,regularization=None,alpha=0.1):
+def OLRE(data_ref,data_test,warming_p,smoothness=None,alpha=0.1):
+    
+    assert isinstance(warming_p,)
+    
     
     ########## This function is the implementation of the online likelihood-ratio estimation based on the Pearson divergence 
     ## data_ref: data from the distribution x~P
@@ -47,6 +50,8 @@ def OLRE(data_ref,data_test,t_0,learning_rate=None,regularization=None,alpha=0.1
     ## list_thetas:list of parameters estimated at everytime time t
     ## kernel: kernel used during the approximations 
     
+    learning_rate=lambda t: 4.0/((t+warming_p)**((2*smoothness)/(2*smoothness+1)))
+    regularization=lambda t: 1/(4*(t+warming_p)**(1/(2*smoothness+1)))
 
         
     rulsif_= RULSIF(data_ref[:t_0],data_test[:t_0],alpha=alpha)
@@ -58,7 +63,7 @@ def OLRE(data_ref,data_test,t_0,learning_rate=None,regularization=None,alpha=0.1
     list_dictionaries=[]
     list_thetas=[]
      
-    t=t_0
+    t=warming_p
     new_point_ref=1.*data_ref[t]
     new_point_test=1.*data_test[t]
 

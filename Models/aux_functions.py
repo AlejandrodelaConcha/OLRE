@@ -49,7 +49,7 @@ def calc_dist(A,B,sqrt=False):
   return dist
 
 @jit(nopython=True)
-def calc_dist_L1(A,,sqrt=False):
+def calc_dist_L1(A,B,sqrt=False):
     ######### This function is a fast version of the distance between elements of two matrices
     ## Input: A,B: matrices of size M,n and K,n
     ## sqrt: Whether to obtain the square root of the distance
