@@ -32,11 +32,7 @@ def r_estimate(x,Kernel,dictionary,theta):
     phi=Kernel.k_V(x).dot(theta)
     return phi
 
-def OLRE(data_ref,data_test,warming_p,smoothness=None,alpha=0.1):
-    
-    assert isinstance(warming_p,)
-    
-    
+def OLRE(data_ref,data_test,warming_period,smoothness=0.5,alpha=0.1):
     ########## This function is the implementation of the online likelihood-ratio estimation based on the Pearson divergence 
     ## data_ref: data from the distribution x~P
     ## data_test: data from the distribution x~Q
@@ -50,11 +46,53 @@ def OLRE(data_ref,data_test,warming_p,smoothness=None,alpha=0.1):
     ## list_thetas:list of parameters estimated at everytime time t
     ## kernel: kernel used during the approximations 
     
-    learning_rate=lambda t: 4.0/((t+warming_p)**((2*smoothness)/(2*smoothness+1)))
-    regularization=lambda t: 1/(4*(t+warming_p)**(1/(2*smoothness+1)))
+    len_data_ref=len(data_ref)
+    len_data_test=len(data_test)
+    min_len=np.min((len_data_ref,len_data_test))
+    
+    ############ Validating the input variables satisfy the conditions of the problem.
+    try:
+        smoothness=float(smoothness)
+        if not (0.5<=smoothness<=1):
+            raise ValueError(F"Parameter smoothness must be between 0.5 and 1")
+    except ValueError as e:
+        print(f"Error: {e}")
+    except TypeError:
+        	print("Error: smoothness parameter should be a float")
+    
+    try:
+        alpha=float(alpha)
+        if not (0.0<=alpha<1):
+            raise ValueError(F"Parameter alpha must be between 0 and 1")
+    except ValueError as e:
+        print(f"Error: {e}")
+    except TypeError:
+        	print("Error: alpha parameter should be a float")
+        
+    try:
+        warming_period=int(warming_period)
+        if not (1<warming_period<=min_len):
+            raise ValueError(F"Warming period should be bigger than 1 and be less that the length of the dataset")
+            
+            
+    except ValueError as e:
+        print(f"Error: {e}")        
+    except TypeError:
+        	print("Error: warming period must be an integer")
+            
+    
+    try:
+        if not (0.0<=alpha<1):
+            raise ValueError(F"Parameter alpha must be between 0 and 1")
+    except ValueError as e:
+        print(f"Error: {e}")
+            
+            
+    learning_rate=lambda t: 4.0/((t+warming_period)**((2*smoothness)/(2*smoothness+1)))
+    regularization=lambda t: 1/(4*(t+warming_period)**(1/(2*smoothness+1)))
 
         
-    rulsif_= RULSIF(data_ref[:t_0],data_test[:t_0],alpha=alpha)
+    rulsif_= RULSIF(data_ref[:warming_period],data_test[:warming_period],alpha=alpha)
     lamb=rulsif_.gamma
     kernel=rulsif_.kernel
     dictionary=[]
@@ -63,7 +101,7 @@ def OLRE(data_ref,data_test,warming_p,smoothness=None,alpha=0.1):
     list_dictionaries=[]
     list_thetas=[]
      
-    t=warming_p
+    t=warming_period
     new_point_ref=1.*data_ref[t]
     new_point_test=1.*data_test[t]
 
@@ -81,7 +119,7 @@ def OLRE(data_ref,data_test,warming_p,smoothness=None,alpha=0.1):
 
     dictionary=np.vstack(dictionary)
     
-    for t in range(t_0+1,len(data_ref)):
+    for t in range(1,min_len):
 
         new_point_ref=1.*data_ref[t]
         new_point_test=1.*data_test[t]
@@ -101,20 +139,9 @@ def OLRE(data_ref,data_test,warming_p,smoothness=None,alpha=0.1):
         dictionary=1.*dictionary
         
         kernel.dictionary=transform_data(dictionary)
-        list_dictionaries.append(1.*kernel.dictionary)
         list_thetas.append(1.*theta)    
         
-    return list_dictionaries,list_thetas,kernel
-
-
-
-
-
-
-
-
-
-
+    return kernel.dictionary,list_thetas,kernel
 
 
 

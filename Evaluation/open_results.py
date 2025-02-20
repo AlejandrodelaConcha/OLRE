@@ -16,7 +16,7 @@ import pickle
 import numpy as np
 from Evaluation import *
 
-def open_results_online(results_directory,experiment,alpha,r):
+def open_results_online(results_directory,experiment,alpha,smoothness):
     ########## Function related with the dynamic and the constant learning rates 
     ### Input:
     # resuts_directory= the directory where the results will be stored 
@@ -27,8 +27,7 @@ def open_results_online(results_directory,experiment,alpha,r):
     # list_dictionaries= the list of the elements of each of the dictionaries 
     # list_theta = the parameters that have been fitted according to the model 
     # list_kernel = the kernel that has been used for estimation 
-    learning_rate="dynamic"
-    file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_r{r}_"+learning_rate+f"_learning_rate"
+    file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_smoothness{smoothness}"
    
   
     file_name=file_name.replace(".","")
