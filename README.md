@@ -23,75 +23,37 @@ This repository provides the necessary components to reproduce results similar t
 4. **example.ipynb**: Jupyter notebook showing how to use the methods.
 5. **run_experiments.py, generate_valuation_metrics.py, generate_plots.py**: These scripts generate the required elements to produce similar results to those reported in the paper.
 
-## How to generate the results reported on the paper ? 
+## Remarks
+- To see a concrete example of how OLRE works, please refer to the Jupyter notebook **example.ipynb**. The variables in the code have been named in a more intuitive way than in the paper. The following equivalences hold: *t₀* = warming_period and $\beta$ = smoothness. The constant *a* is fixed at its lower bound, i.e., *a = 4*.
 
-(This may take days in a normal computer)
+## How to Generate the Results Reported in the Paper?
 
-0) Fix the results directory where the output will be saved /Users/.../Results
-1) Run the following:      
+> ⚠️ **Note:** Running this process on a standard computer may take several days due to the large number of samples used for estimating the variance and mean.
 
-############################ RUN the experiments 
+### Steps:
+1. **Set the results directory** where the output will be saved, e.g.:  
+   `"C:/Users/.../Results"`
 
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --method "KLIEP"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 2 --T 10000 --n_runs 100 --method "KLIEP"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 3 --T 10000 --n_runs 100 --method "KLIEP"
+2. Given the **experiment** (`1, 2, 3`), the **method** (`OLRE, KLIEP, RULSIF`), the **regularization parameter** $\alpha$ (for **OLRE** and **RULSIF**), and the **smoothness parameter** (for **OLRE**), estimate the likelihood-ratio.  
 
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --alpha 0.1 --method "RULSIF"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 2 --T 10000 --n_runs 100 --alpha 0.1 --method "RULSIF"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 3 --T 10000 --n_runs 100 --alpha 0.1 --method "RULSIF"
+   **Examples:**
+   ```bash
+   python run_experiments.py --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --alpha 0.1 --smoothness 1.0 --method "OLRE"
+   python run_experiments.py --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --alpha 0.1 --method "RULSIF"
+   python run_experiments.py --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --method "KLIEP"
+   
+3. **Compute the estimation errors** using the same parameters:
+   
+   **Examples:**
+   ```bash
+   python generate_valuation_metrics.py --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --alpha 0.1 --smoothness 1.0 --method "OLRE"
+   python generate_valuation_metrics.py --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --alpha 0.1 --method "RULSIF"
+   python generate_valuation_metrics.py--results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --method "KLIEP"
 
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --alpha 0.5 --method "RULSIF"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 2 --T 10000 --n_runs 100 --alpha 0.5 --method "RULSIF"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 3 --T 10000 --n_runs 100 --alpha 0.5 --method "RULSIF"
+4. **Run all parameter combinations** (method="OLRE",alpha=0.1,smoothness=1.0), (method="OLRE",alpha=0.1,smoothness=0.5),(method="OLRE",alpha=0.5,smoothness=1.0), (method="OLRE",alpha=0.5,smoothness=0.5)
+   (method="RULSIF",alpha=0.1),(method="RULSIF",alpha=0.5),(method="KLIEP"), then generate the plot comparing the algorithm performances.
+   ```bash
+   python generate_plots.py --results_directory "C:/Users/alexd/Documents/OLRE/Results" --experiment 1
 
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --alpha 0.1 --smoothness 1.0 --method "OLRE"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 2 --T 10000 --n_runs 100 --alpha 0.1 --smoothness 1.0 --method "OLRE"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 3 --T 10000 --n_runs 100 --alpha 0.1 --smoothness 1.0 --method "OLRE"
+5. **Repeat the same steps** for each experiment (1,2,3). 
 
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --alpha 0.1 --smoothness 0.5 --method "OLRE"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 2 --T 10000 --n_runs 100 --alpha 0.1 --smoothness 0.5 --method "OLRE"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 3 --T 10000 --n_runs 100 --alpha 0.1 --smoothness 0.5 --method "OLRE"
-
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --alpha 0.5 --smoothness 1.0 --method "OLRE"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 2 --T 10000 --n_runs 100 --alpha 0.5 --smoothness 1.0 --method "OLRE"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 3 --T 10000 --n_runs 100 --alpha 0.5 --smoothness 1.0 --method "OLRE"
-
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 1 --T 10000 --n_runs 100 --alpha 0.5 --smoothness 0.5 --method "OLRE"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 2 --T 10000 --n_runs 100 --alpha 0.5 --smoothness 0.5 --method "OLRE"
-python run_experiments.py  --results_directory "C:/Users/..../Results" --experiment 3 --T 10000 --n_runs 100 --alpha 0.5 --smoothness 0.5 --method "OLRE"
-
-############################ Generate the valuation metrics
-
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 1 --method "KLIEP"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 2 --method "KLIEP"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 3 --method "KLIEP"
-
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 1 --alpha 0.1 --method "RULSIF"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 2 --alpha 0.1 --method "RULSIF"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 3 --alpha 0.1 --method "RULSIF
-
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 1 --alpha 0.5 --method "RULSIF"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 2 --alpha 0.5 --method "RULSIF"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 3 --alpha 0.5 --method "RULSIF"
-
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 1 --alpha 0.1 --smoothness 1.0 --method "OLRE"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 2 --alpha 0.1 --smoothness 1.0 --method "OLRE"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 3 --alpha 0.1 --smoothness 1.0 --method "OLRE"
-
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 1 --alpha 0.1 --smoothness 0.5 --method "OLRE"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 2 --alpha 0.1 --smoothness 0.5 --method "OLRE"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 3 --alpha 0.1 --smoothness 0.5 --method "OLRE"
-
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 1 --alpha 0.5 --smoothness 1.0 --method "OLRE"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 2 --alpha 0.5 --smoothness 1.0 --method "OLRE"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 3 --alpha 0.5 --smoothness 1.0 --method "OLRE"
-
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 1 --alpha 0.5 --smoothness 0.5 --method "OLRE"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 2 --alpha 0.5 --smoothness 0.5 --method "OLRE"
-python generate_valuation_metrics.py  --results_directory "C:/Users/..../Results" --experiment 3 --alpha 0.5 --smoothness 0.5 --method "OLRE"
-
-########################### Final plots  
-
-python generate_plots.py --results_directory "C:/Users/..../Results" --experiment 1
-python generate_plots.py --results_directory "C:/Users/..../Results" --experiment 2
-python generate_plots.py --results_directory "C:/Users/..../Results" --experiment 3
