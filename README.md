@@ -1,6 +1,9 @@
 # OLRE Online Likelihod-Ratio Estimator. 
-Quantifying the difference between two probability density functions, *p* and *q*, using available data, is a fundamental problem in Statistics and Machine Learning. A usual approach for addressing this problem is the density/likelihood-ratio estimation (LRE) between *p* and *q*, which—to our best knowledge—has been investigated mainly for the offline case. In this repository, we introduce a new framework for **online non-parametric LRE (OLRE)** for the setting where pairs of i.i.d. observations *(xₜ ∼ p, xₜ' ∼ q)* are observed over time. The non-parametric nature of our approach has the advantage of being agnostic to the forms of *p* and *q*.
-Moreover, we capitalize on the recent advances in **Kernel Methods** and functional minimization to develop an estimator that can be efficiently updated online.
+Quantifying the difference between two probability density functions, *p* and *q*, using available data, is a fundamental problem in Statistics and Machine Learning. A usual approach for addressing this problem is the density/likelihood-ratio estimation (LRE) between *p* and *q*, which—to our best knowledge—has been investigated mainly for the offline case. In this repository, we introduce a new framework for **online non-parametric LRE (OLRE)** for the setting where pairs of i.i.d. observations *(xₜ ∼ p, xₜ' ∼ q)* are observed over time. The non-parametric nature of our approach has the advantage of being agnostic to the forms of *p* and *q*. Moreover, we capitalize on the recent advances in **Kernel Methods** and functional minimization to develop an estimator that can be efficiently updated online.
+
+<div align="center">
+  <img src="time_series_to_ratio.png" alt="OLRE Framework" width="600">
+</div>
 
 ## Goal: 
 This repository provides the necessary components to reproduce results similar to those described in the paper 'Online Non-parametric Likelihood Ratio-Estimation by Pearson Divergence Functional Minimization,' accepted at the 27th International Conference on Artificial Intelligence and Statistics (AISTATS).
