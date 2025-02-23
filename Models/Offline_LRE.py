@@ -45,13 +45,23 @@ class KLIEP():
     # tol= tolerated error 
     # lr: learning rate associated with the optimization problem
     # verbose: function to print the fitting results 
+    
+        try:
+            k_cross_validation=int(k_cross_validation)
+            if not (1<k_cross_validation):
+                raise ValueError(F"The number of samples should be bigger than 1")
+                         
+        except ValueError as e:
+            print(f"Error: {e}")        
+        except TypeError:
+            	print("Error: The number of samples must be an integer")
         
         self.data_ref=transform_data(data_ref)
         self.data_test=transform_data(data_test)
         self.tol=tol
         self.k_cross_validation=k_cross_validation
         self.lr=lr
-        kernel_1=self.initializalize_kernel(all_test) 
+        kernel_1=self.initializalize_kernel() 
         self.kernel=self.model_selection(kernel_1,verbose=verbose)
 
      
@@ -59,19 +69,17 @@ class KLIEP():
 
     ## Output
     # kernel_1: A initialized kernel with a given dictionary 
-        if all_test:
+        if self.data_test.shape[0]>100:
+            index=np.random.choice(len(self.data_test),replace=False,size=100)
+            index.sort()
+            sigma=get_sigma(self.data_test[index])
+            dictionary=1*self.data_test[index]
+            self.index=index
+        else:
             sigma=get_sigma(self.data_test)
             dictionary=1*self.data_test
-     
-        else:
-            if self.data_test.shape[0]>100:
-                index=np.random.choice(len(self.data_test),replace=False,size=100)
-                sigma=get_sigma(self.data_test[index])
-                dictionary=1*self.data_test[index]
-            else:
-                sigma=get_sigma(self.data_test)
-                dictionary=1*self.data_test
-       
+            self.index=np.arange(len(self.data_test))
+            
         if sigma==0:
             sigma=1e-6
                 
@@ -238,6 +246,15 @@ class RULSIF():
     # data_test: data points representing the distribution p_v'(.) 
     # alpha: regularization parameter associated with the upperbound of the likelihood ratio
     # verbose: whether or not print intermediate results  
+    
+        try:
+            alpha=float(alpha)
+            if not (0.0<=alpha<1):
+                raise ValueError(F"Parameter alpha must be between 0 and 1")
+        except ValueError as e:
+            print(f"Error: {e}")
+        except TypeError:
+            	print("Error: alpha parameter should be a float")
         
         self.data_ref=transform_data(data_ref)
         self.data_test=transform_data(data_test)

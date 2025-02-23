@@ -46,7 +46,7 @@ def data_experiment_3(N,p=None):
     return data_ref,data_test
           
 
-def run_experiments(experiment,T,alpha,learning_rate,regularization,t_0=100,n_runs=50,file_name=None):
+def run_experiments(experiment,T,warming_period,smoothness=0.5,alpha=0.1,n_runs=50,file_name=None):
     ########### This function run the experiments for the online setting described in the paper 
     ### Input
     # experiment= experiment to run 
@@ -69,9 +69,7 @@ def run_experiments(experiment,T,alpha,learning_rate,regularization,t_0=100,n_ru
             data_ref=np.random.uniform(-np.sqrt(3),np.sqrt(3),size=T)
             data_test=np.random.laplace(loc=0,scale=np.sqrt(0.5),size=T)
             
-            dictionary_PEARSON,theta_PEARSON,Kernel_PEARSON=OLRE(data_ref,data_test,t_0,learning_rate,regularization,alpha=alpha)
-         
-            dictionary_PEARSON=[dictionary_PEARSON[j] for j in range(0,len(dictionary_PEARSON),100)]
+            dictionary_PEARSON,theta_PEARSON,Kernel_PEARSON=OLRE(data_ref,data_test,warming_period=warming_period,smoothness=smoothness,alpha=alpha)
             theta_PEARSON=[theta_PEARSON[j] for j in range(0,len(theta_PEARSON),100)]
             list_dictionaries_PEARSON.append(copy.deepcopy(dictionary_PEARSON))
             list_theta_PEARSON.append(copy.deepcopy(theta_PEARSON))
@@ -83,9 +81,7 @@ def run_experiments(experiment,T,alpha,learning_rate,regularization,t_0=100,n_ru
             data_test=np.random.multivariate_normal(np.zeros(2),
                                             cov=np.array([[1,4/5],[4/5,1]]),size=T)
         
-            dictionary_PEARSON,theta_PEARSON,Kernel_PEARSON=OLRE(data_ref,data_test,t_0,learning_rate,regularization,sparse_dictionary,compression_budget,alpha=alpha)
-            
-            dictionary_PEARSON=[dictionary_PEARSON[j] for j in range(0,len(dictionary_PEARSON),100)]
+            dictionary_PEARSON,theta_PEARSON,Kernel_PEARSON=OLRE(data_ref,data_test,warming_period=warming_period,smoothness=smoothness,alpha=alpha)
             theta_PEARSON=[theta_PEARSON[j] for j in range(0,len(theta_PEARSON),100)]
             list_dictionaries_PEARSON.append(copy.deepcopy(dictionary_PEARSON))
             list_theta_PEARSON.append(copy.deepcopy(theta_PEARSON))
@@ -94,9 +90,7 @@ def run_experiments(experiment,T,alpha,learning_rate,regularization,t_0=100,n_ru
         if experiment==3:
             data_ref,data_test=data_experiment_3(N=T)
         
-            dictionary_PEARSON,theta_PEARSON,Kernel_PEARSON=OLRE(data_ref,data_test,t_0,learning_rate,regularization,compression_budget,sparse_dictionary=False,alpha=alpha)
-            
-            dictionary_PEARSON=[dictionary_PEARSON[j] for j in range(0,len(dictionary_PEARSON),100)]
+            dictionary_PEARSON,theta_PEARSON,Kernel_PEARSON=OLRE(data_ref,data_test,warming_period=warming_period,smoothness=smoothness,alpha=alpha)
             theta_PEARSON=[theta_PEARSON[j] for j in range(0,len(theta_PEARSON),100)]
             list_dictionaries_PEARSON.append(copy.deepcopy(dictionary_PEARSON))
             list_theta_PEARSON.append(copy.deepcopy(theta_PEARSON))

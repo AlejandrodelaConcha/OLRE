@@ -36,10 +36,9 @@ def OLRE(data_ref,data_test,warming_period,smoothness=0.5,alpha=0.1):
     ########## This function is the implementation of the online likelihood-ratio estimation based on the Pearson divergence 
     ## data_ref: data from the distribution x~P
     ## data_test: data from the distribution x~Q
-    ## t_0: number of observations used in the initialization 
-    ## learning_rates: the parameter related with stochastic approximation 
-    ## regularization: the parameter associated with the Tikinov regularization
-    ## alpha: parameter to upper-bound the likelihood ratio.
+    ## warming_period: number of observations to be used in the initialization (t_0 in the paper)
+    ## smoothnes: this parameter regulates the smoothness of the likelihood-ratio with respect to the Hilbert Space (beta in the paper). It should be in the interval [0.5,1]. 
+    ## alpha: parameter to upper-bound the likelihood-ratio. It should be in the interval (0,1]. 
     
     ### Output 
     ## list_dictionaries:list of the used dictionaries at every time t
@@ -73,19 +72,12 @@ def OLRE(data_ref,data_test,warming_period,smoothness=0.5,alpha=0.1):
         warming_period=int(warming_period)
         if not (1<warming_period<=min_len):
             raise ValueError(F"Warming period should be bigger than 1 and be less that the length of the dataset")
-            
-            
+                     
     except ValueError as e:
         print(f"Error: {e}")        
     except TypeError:
         	print("Error: warming period must be an integer")
             
-    
-    try:
-        if not (0.0<=alpha<1):
-            raise ValueError(F"Parameter alpha must be between 0 and 1")
-    except ValueError as e:
-        print(f"Error: {e}")
             
             
     learning_rate=lambda t: 4.0/((t+warming_period)**((2*smoothness)/(2*smoothness+1)))

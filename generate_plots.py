@@ -12,8 +12,6 @@ import argparse
 import numpy as np
 from mpl_toolkits import mplot3d
 
-results_directory="C:/Users/33768/Documents/Online_non_parametric_likelihood_ratio_estimation_by_Pearson_divergence_functional_minimization/Code/Results"
-
 
 def main(results_directory,experiment):
 
@@ -21,7 +19,7 @@ def main(results_directory,experiment):
   
     T=10000
     alpha=0.1
-    file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_errors_offline_kliep"
+    file_name=results_directory+"/"+f"Experiment_{experiment}_errors_offline_kliep"
     file_name=file_name.replace(".","") 
 
     with open(file_name+".pickle", 'rb') as f:
@@ -43,9 +41,9 @@ def main(results_directory,experiment):
         
         
     alpha=0.1
-    r=1.0
+    smoothness=1.0
     
-    file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_r{r}_"+"dynamic"+f"_learning_rate_Error"
+    file_name=results_directory+"/"+f"Experiment_{experiment}_errors_alpha{alpha}_smoothness{smoothness}_olre"
     file_name=file_name.replace(".","")
     
     with open(file_name+".pickle", 'rb') as f:
@@ -55,47 +53,20 @@ def main(results_directory,experiment):
     alpha=0.1
     r=0.5
     
-    file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_r{r}_"+"dynamic"+f"_learning_rate_Error"
+    file_name=results_directory+"/"+f"Experiment_{experiment}_errors_alpha{alpha}_smoothness{smoothness}_olre"
     file_name=file_name.replace(".","")
     
     with open(file_name+".pickle", 'rb') as f:
         results_dynamic_r05_alpha_01=  pickle.load(f)
         
-        
-        
-    ################# Constant    
-    
-    
-    
-   # alpha=0.1
- #   r=1.0
- #   learning_rate=0.001
-    
-   # file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_"+"constant"+f"_learning_rate_{learning_rate}_Error"
-  #  file_name=file_name.replace(".","")
-    
- #   with open(file_name+".pickle", 'rb') as f:
- #       results_constant_alpha_01=  pickle.load(f)
-        
 
- #   alpha=0.5
- #   learning_rate=0.001
-    
- #   file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_"+"constant"+f"_learning_rate_{learning_rate}_Error"
-  #  file_name=file_name.replace(".","")
-    
-#    with open(file_name+".pickle", 'rb') as f:
- #       results_constant_alpha_05=  pickle.load(f)
-    
-    
-    
     ##########################################################
         
      
     alpha=0.5
     r=1.0
      
-    file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_r{r}_"+"dynamic"+f"_learning_rate_Error"
+    file_name=results_directory+"/"+f"Experiment_{experiment}_errors_alpha{alpha}_smoothness{smoothness}_olre"
     file_name=file_name.replace(".","")
      
     with open(file_name+".pickle", 'rb') as f:
@@ -104,7 +75,7 @@ def main(results_directory,experiment):
     alpha=0.5
     r=0.5
      
-    file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_r{r}_"+"dynamic"+f"_learning_rate_Error"
+    file_name=results_directory+"/"+f"Experiment_{experiment}_errors_alpha{alpha}_smoothness{smoothness}_olre"
     file_name=file_name.replace(".","")
      
     with open(file_name+".pickle", 'rb') as f:
@@ -118,10 +89,6 @@ def main(results_directory,experiment):
     list_L2_dynamic_r1_alpha_01=np.vstack(results_dynamic_r1_alpha_01["L2"])
     list_L2_dynamic_r05_alpha_01=np.vstack(results_dynamic_r05_alpha_01["L2"])
     
-    
-#    list_L2_constant_alpha_01=np.vstack(results_constant_alpha_01["L2"])
-#    list_L2_constant_alpha_05=np.vstack(results_constant_alpha_05["L2"])
-    
     list_L2_dynamic_r1_alpha_05=np.vstack(results_dynamic_r1_alpha_05["L2"])
     list_L2_dynamic_r05_alpha_05=np.vstack(results_dynamic_r05_alpha_05["L2"])
    
@@ -134,12 +101,6 @@ def main(results_directory,experiment):
     mean_log_L2_distance_rulsif_05=np.mean(np.log(list_L2_distance_rulsif_05),0)
     std_log_L2_distance_rulsif_05=np.std(np.log(list_L2_distance_rulsif_05),0)
         
- #   mean_log_L2_distance_constant_alpha_01=np.mean(np.log(list_L2_constant_alpha_01),0)
-  #  std_log_L2_distance_constant_alpha_01=np.std(np.log(list_L2_constant_alpha_01),0)
-    
- #   mean_log_L2_distance_constant_alpha_05=np.mean(np.log(list_L2_constant_alpha_05),0)
- #   std_log_L2_distance_constant_alpha_05=np.std(np.log(list_L2_constant_alpha_05),0)
-
     mean_log_L2_distance_dynamic_r1_alpha_01=np.mean(np.log(list_L2_dynamic_r1_alpha_01),0)
     std_log_L2_distance_dynamic_r1_alpha_01=np.std(np.log(list_L2_dynamic_r1_alpha_01),0)
  
@@ -172,40 +133,38 @@ def main(results_directory,experiment):
                mean_log_L2_distance_rulsif_05+std_log_L2_distance_rulsif_05, 
                 color='darkorange', alpha=0.1)
      
-    ax.plot(np.arange(0,10000-100,100), mean_log_L2_distance_dynamic_r1_alpha_01,color="green",
+    ax.plot(np.arange(0,10000,100), mean_log_L2_distance_dynamic_r1_alpha_01,color="green",
        label=r'OLRE $\quad \! \alpha=0.1,r=1.0$',linestyle="dashed",linewidth = '10')
-    ax.fill_between(np.arange(0,10000-100,100), mean_log_L2_distance_dynamic_r1_alpha_01-std_log_L2_distance_dynamic_r1_alpha_01,
+    ax.fill_between(np.arange(0,10000,100), mean_log_L2_distance_dynamic_r1_alpha_01-std_log_L2_distance_dynamic_r1_alpha_01,
               mean_log_L2_distance_dynamic_r1_alpha_01+std_log_L2_distance_dynamic_r1_alpha_01, 
                 color='green', alpha=0.1)
     
-    ax.plot(np.arange(0,10000-100,100), mean_log_L2_distance_dynamic_r05_alpha_01,color="olive",
+    ax.plot(np.arange(0,10000,100), mean_log_L2_distance_dynamic_r05_alpha_01,color="olive",
        label=r'$\quad \qquad \quad \! \alpha=0.1,r=0.5$',linestyle="solid",linewidth = '10')
-    ax.fill_between(np.arange(0,10000-100,100), mean_log_L2_distance_dynamic_r05_alpha_01-std_log_L2_distance_dynamic_r05_alpha_01,
+    ax.fill_between(np.arange(0,10000,100), mean_log_L2_distance_dynamic_r05_alpha_01-std_log_L2_distance_dynamic_r05_alpha_01,
               mean_log_L2_distance_dynamic_r05_alpha_01+std_log_L2_distance_dynamic_r05_alpha_01, 
                 color='royalblue', alpha=0.1)
     
-    ax.plot(np.arange(0,10000-100,100), mean_log_L2_distance_dynamic_r1_alpha_05,color="red",
+    ax.plot(np.arange(0,10000,100), mean_log_L2_distance_dynamic_r1_alpha_05,color="red",
        label=r'OLRE $\quad \! \alpha=0.5,r=1.0$',linestyle="dashed",linewidth = '10')
-    ax.fill_between(np.arange(0,10000-100,100), mean_log_L2_distance_dynamic_r1_alpha_05-std_log_L2_distance_dynamic_r1_alpha_05,
+    ax.fill_between(np.arange(0,10000,100), mean_log_L2_distance_dynamic_r1_alpha_05-std_log_L2_distance_dynamic_r1_alpha_05,
               mean_log_L2_distance_dynamic_r1_alpha_05+std_log_L2_distance_dynamic_r1_alpha_05, 
                 color='red', alpha=0.1)
     
-    ax.plot(np.arange(0,10000-100,100), mean_log_L2_distance_dynamic_r05_alpha_05,color="maroon",
+    ax.plot(np.arange(0,10000,100), mean_log_L2_distance_dynamic_r05_alpha_05,color="maroon",
        label=r'$\quad \qquad \quad \! \alpha=0.5,r=0.5$',linestyle="solid",linewidth = '10')
-    ax.fill_between(np.arange(0,10000-100,100), mean_log_L2_distance_dynamic_r05_alpha_05-std_log_L2_distance_dynamic_r05_alpha_05,
+    ax.fill_between(np.arange(0,10000,100), mean_log_L2_distance_dynamic_r05_alpha_05-std_log_L2_distance_dynamic_r05_alpha_05,
               mean_log_L2_distance_dynamic_r05_alpha_05+std_log_L2_distance_dynamic_r05_alpha_05, 
                 color='maroon', alpha=0.1)
        
     ax.set_ylabel(r'$\log(\mathbb{E}_{p^{\alpha}(x)}[(f_t-r^{\alpha})^2(x)])$',fontsize=50)
     ax.set_xlabel(r'$\#$ of training samples processed',fontsize=50)
     
-  #  ax.set_ylim(np.min(mean_log_L2_distance_dynamic_r05_alpha_05)-0.5, 3)
     ax.tick_params(axis='x', labelsize=50)
     ax.tick_params(axis='y', labelsize=50)
     ax.legend(loc='upper right',ncol=2,fontsize=35)
 
     file_name=results_directory+"/"+f"Experiment_{experiment}_results"
-  #  file_name=results_directory+"/"+f"Experiment_{experiment}_results_without_legend"
     file_name=file_name.replace(".","")
     plt.savefig(file_name+".pdf")
 
