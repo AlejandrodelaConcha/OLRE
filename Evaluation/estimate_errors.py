@@ -17,9 +17,9 @@ from Models import *
 from Experiments import *
 import pickle
 
-def error_graph(data_ref_validation,data_test_validation,list_dictionaries,list_thetas,Kernel,real_likelihood,alpha=0.1):
+def error_plot(data_ref_validation,data_test_validation,online_dictionary,list_thetas,Kernel,real_likelihood,alpha=0.1):
     
-    ######## This functions generate the convergence graphs of the different algorithms. 
+    ######## This functions generate the convergence plots of the different algorithms. 
     
     ###### Before running this functions, the results of the experiments should be produced. 
     ########### Input 
@@ -43,7 +43,8 @@ def error_graph(data_ref_validation,data_test_validation,list_dictionaries,list_
     
    
     for i in range(0,len(list_thetas)):
-        Kernel.dictionary=1.*list_dictionaries[i]
+        len_dictionary=len(list_thetas[i])
+        Kernel.dictionary=1.*online_dictionary[:len_dictionary]
         phi_ref= Kernel.k_V(data_ref_validation).dot(list_thetas[i])
         phi_test=Kernel.k_V(data_test_validation).dot(list_thetas[i])
 
@@ -68,9 +69,9 @@ def error_graph(data_ref_validation,data_test_validation,list_dictionaries,list_
 
 
 
-def error_graph_offline(data_ref_validation,data_test_validation,list_dictionaries,list_sigmas,list_thetas,real_likelihood,method="RULSIF",alpha=0.1,Nystrom=False):
+def error_plot_offline(data_ref_validation,data_test_validation,list_dictionaries,list_sigmas,list_thetas,real_likelihood,method="RULSIF",alpha=0.1):
     
-    ######## This functions generate the convergence graphs of the different algorithms. 
+    ######## This functions generate the convergence plots of the different algorithms. 
     
     ###### Before running this functions, the results of the experiments should be produced. 
     ########### Input 
@@ -91,10 +92,7 @@ def error_graph_offline(data_ref_validation,data_test_validation,list_dictionari
     error_divergence=[]
 
     for i in range(0,len(list_thetas)):
-        if Nystrom: 
-            Kernel=Nystrom_Kernel(dictionary=list_dictionaries[i],sigma=list_sigmas[i])
-        else:
-            Kernel=Gauss_Kernel(dictionary=list_dictionaries[i],sigma=list_sigmas[i])
+        Kernel=Gauss_Kernel(dictionary=list_dictionaries[i],sigma=list_sigmas[i])
             
         phi_ref= Kernel.k_V(data_ref_validation).dot(list_thetas[i])
         phi_test=Kernel.k_V(data_test_validation).dot(list_thetas[i])
@@ -132,7 +130,7 @@ def error_graph_offline(data_ref_validation,data_test_validation,list_dictionari
     return error_cost_function,error_divergence
 
 
-def estimate_errors_online(results_directory,list_dictionaries,list_theta,list_kernel,experiment,alpha,r):
+def estimate_errors_online(results_directory,list_dictionaries,list_theta,list_kernel,experiment,alpha,smoothness):
     ######## This function generates the convergence rates for OLRE over multiple instances on the same experiment    
     ########### Input 
     ## results_directory: the name of the folder where the results will be stored
@@ -147,8 +145,7 @@ def estimate_errors_online(results_directory,list_dictionaries,list_theta,list_k
     ## error_cost_function: difference between the cost function evaluated at the estimated likelihood-ratio and the real likelihood ratio
     ## error_divergence: the L2 distance between the estimated likelihood-ratio and the real likelihood-ratio
     
-    dictionary="dynamic"
-    file_name=results_directory+"/"+f"Experiment_{experiment}_alpha{alpha}_r{r}_"+dictionary+f"_learning_rate_Error"
+    file_name=results_directory+"/"+f"Experiment_{experiment}_errors_alpha{alpha}_smoothness{smoothness}_olre"
        
     list_errors_PEARSON=[]
     list_L2_distance_PEARSON=[]
@@ -159,7 +156,7 @@ def estimate_errors_online(results_directory,list_dictionaries,list_theta,list_k
         
         for i in range(len(list_dictionaries)):
             print(i)         
-            errors_PEARSON,L2_distance=error_graph(data_ref_validation,data_test_validation,list_dictionaries[i],list_theta[i],list_kernel[i],
+            errors_PEARSON,L2_distance=error_plot(data_ref_validation,data_test_validation,list_dictionaries[i],list_theta[i],list_kernel[i],
                                                  real_likelihood=lambda x: r_uniform_laplace(x,alpha=alpha),alpha=alpha)
         
             list_errors_PEARSON.append(np.array(errors_PEARSON))
@@ -173,7 +170,7 @@ def estimate_errors_online(results_directory,list_dictionaries,list_theta,list_k
         for i in range(len(list_dictionaries)):
             print(i)
         
-            errors_PEARSON,L2_distance=error_graph(data_ref_validation,data_test_validation,list_dictionaries[i],list_theta[i],list_kernel[i],
+            errors_PEARSON,L2_distance=error_plot(data_ref_validation,data_test_validation,list_dictionaries[i],list_theta[i],list_kernel[i],
                                                  real_likelihood=lambda x: r_bivariate_normal(x,alpha=alpha),alpha=alpha)
         
             list_errors_PEARSON.append(np.array(errors_PEARSON))
@@ -186,7 +183,7 @@ def estimate_errors_online(results_directory,list_dictionaries,list_theta,list_k
         for i in range(len(list_dictionaries)):
             print(i)
         
-            errors_PEARSON,L2_distance=error_graph(data_ref_validation,data_test_validation,list_dictionaries[i],list_theta[i],list_kernel[i],
+            errors_PEARSON,L2_distance=error_plot(data_ref_validation,data_test_validation,list_dictionaries[i],list_theta[i],list_kernel[i],
                                                  real_likelihood=lambda x: r_normal_mixture(x,alpha=alpha),alpha=alpha)
         
             list_errors_PEARSON.append(np.array(errors_PEARSON))
@@ -226,7 +223,7 @@ def estimate_errors_offline(results_directory,list_dictionaries,list_thetas,list
         for i in range(len(list_thetas)):
             print(i)
             
-            errors_,L2_distance_=error_graph_offline(data_ref_validation,data_test_validation,list_dictionaries[i],list_sigmas[i],list_thetas[i],
+            errors_,L2_distance_=error_plot_offline(data_ref_validation,data_test_validation,list_dictionaries[i],list_sigmas[i],list_thetas[i],
                                                  real_likelihood=lambda x: r_uniform_laplace(x,alpha=alpha),method=method,alpha=alpha)
             list_errors.append(np.array(errors_))
             list_L2_distance.append(np.array(L2_distance_))
@@ -243,7 +240,7 @@ def estimate_errors_offline(results_directory,list_dictionaries,list_thetas,list
             print(i)
             
  
-            errors_,L2_distance_=error_graph_offline(data_ref_validation,data_test_validation,list_dictionaries[i],list_sigmas[i],list_thetas[i],
+            errors_,L2_distance_=error_plot_offline(data_ref_validation,data_test_validation,list_dictionaries[i],list_sigmas[i],list_thetas[i],
                                                  real_likelihood=lambda x: r_bivariate_normal(x,alpha=alpha),method=method,alpha=alpha)
             list_errors.append(np.array(errors_))
             list_L2_distance.append(np.array(L2_distance_))
@@ -259,7 +256,7 @@ def estimate_errors_offline(results_directory,list_dictionaries,list_thetas,list
         for i in range(len(list_thetas)):
             print(i)
  
-            errors_,L2_distance_=error_graph_offline(data_ref_validation,data_test_validation,list_dictionaries[i],list_sigmas[i],list_thetas[i],
+            errors_,L2_distance_=error_plot_offline(data_ref_validation,data_test_validation,list_dictionaries[i],list_sigmas[i],list_thetas[i],
                                                  real_likelihood=lambda x:  r_normal_mixture(x,alpha=alpha),method=method,alpha=alpha)
             list_errors.append(np.array(errors_))
             list_L2_distance.append(np.array(L2_distance_))

@@ -2,14 +2,14 @@ import argparse
 from Experiments import *
 import pickle
 
-def main(results_directory,experiment,T,n_runs,alpha,r,learning_rate,regularization,method):   
+def main(results_directory,experiment,T,n_runs,alpha,smoothness,method):   
     
     if method=="OLRE":  
         learning_rate=lambda t: 4.0/((t)**((2*r)/(2*r+1)))
         regularization=lambda t: 1/(4*(t**(1/(2*r+1))))
-        file_name=results_directory+f"Experiment_{experiment}_alpha{alpha}_r{r}_dynamic_learning_rate"
+        file_name=results_directory+f"Experiment_{experiment}_alpha{alpha}_smoothness{smoothness}"
         file_name=file_name.replace(".","")
-        run_experiments(experiment,T,alpha,learning_rate,regularization,t_0=100,n_runs=n_runs,file_name=file_name)  
+        run_experiments(experiment,T,alpha=alpha,smoothness=smoothness,warming_period=100,n_runs=n_runs,file_name=file_name)  
  
     elif method=="KLIEP":  
         file_name=results_directory+f"Experiment_{experiment}_kliep"
@@ -26,12 +26,10 @@ if __name__=="__main__":
     parser=argparse.ArgumentParser(description="Parameters to replicate experiments")
     parser.add_argument("--results_directory") #### Dictionary where the results will be saved
     parser.add_argument("--experiment") #### The experiment to be run
-    parser.add_argument("--T")  ############## The number of the lenght
+    parser.add_argument("--T")  ############## The size of the data set
     parser.add_argument("--n_runs") #### the number of simulations
-    parser.add_argument("--alpha") #### the number of simulations
-    parser.add_argument("--smoothness",default=None) #### smoothness parameter
-    parser.add_argument("--learning_rate",default=None) #### learning_rate parameter
-    parser.add_argument("--regularization",default=None) #### regularization parameter
+    parser.add_argument("--alpha",default=0.0)  ## alpha: parameter to upper-bound the likelihood-ratio. It should be in the interval (0,1]. 
+    parser.add_argument("--smoothness",default=0.5) ## smoothnes: this parameter regulates the smoothness of the likelihood-ratio with respect to the Hilbert Space (beta in the paper). It should be in the interval [0.5,1].
     parser.add_argument("--method") #### the method to be run 
     
     args=parser.parse_args()
@@ -41,23 +39,11 @@ if __name__=="__main__":
     experiment=int(args.experiment)
     T=int(args.T)
     n_runs=int(args.n_runs)
-    
-    r=args.smoothness
-    if r is not None:
-        r=float(r)
-        
-    learning_rate=args.learning_rate
-    if learning_rate is not None:
-        learning_rate=float(learning_rate) 
-        
-    regularization=args.regularization  
-    if regularization is not None:
-        regularization=float(regularization)
-    
+    smoothness=args.smoothness
     method=str(args.method)
     alpha=float(args.alpha)
   
-    main(results_directory,experiment,T,n_runs,alpha,r,learning_rate,regularization,method)
+    main(results_directory,experiment,T,n_runs,alpha,smoothness,method)
     
     
     

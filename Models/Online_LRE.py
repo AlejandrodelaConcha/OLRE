@@ -2,8 +2,8 @@
 # Title:  Offline_LRE
 # Author(s): Alejandro de la Concha
 # Initial version:  2021-05-17
-# Last modified:    2024-02-28              
-# This version:     2024-05-28
+# Last modified:    2025-02-17             
+# This version:     2025-02-17  
 # -----------------------------------------------------------------------------------------------------------------
 # Objective(s): This code provides the implementation of OLRE
 # -----------------------------------------------------------------------------------------------------------------
@@ -32,24 +32,59 @@ def r_estimate(x,Kernel,dictionary,theta):
     phi=Kernel.k_V(x).dot(theta)
     return phi
 
-def OLRE(data_ref,data_test,t_0,learning_rate=None,regularization=None,alpha=0.1):
-    
+def OLRE(data_ref,data_test,warming_period,smoothness=0.5,alpha=0.1):
     ########## This function is the implementation of the online likelihood-ratio estimation based on the Pearson divergence 
     ## data_ref: data from the distribution x~P
     ## data_test: data from the distribution x~Q
-    ## t_0: number of observations used in the initialization 
-    ## learning_rates: the parameter related with stochastic approximation 
-    ## regularization: the parameter associated with the Tikinov regularization
-    ## alpha: parameter to upper-bound the likelihood ratio.
+    ## warming_period: number of observations to be used in the initialization (t_0 in the paper)
+    ## smoothnes: this parameter regulates the smoothness of the likelihood-ratio with respect to the Hilbert Space (beta in the paper). It should be in the interval [0.5,1]. 
+    ## alpha: parameter to upper-bound the likelihood-ratio. It should be in the interval (0,1]. 
     
     ### Output 
     ## list_dictionaries:list of the used dictionaries at every time t
     ## list_thetas:list of parameters estimated at everytime time t
     ## kernel: kernel used during the approximations 
     
+    len_data_ref=len(data_ref)
+    len_data_test=len(data_test)
+    min_len=np.min((len_data_ref,len_data_test))
+    
+    ############ Validating the input variables satisfy the conditions of the problem.
+    try:
+        smoothness=float(smoothness)
+        if not (0.5<=smoothness<=1):
+            raise ValueError(F"Parameter smoothness must be between 0.5 and 1")
+    except ValueError as e:
+        print(f"Error: {e}")
+    except TypeError:
+        	print("Error: smoothness parameter should be a float")
+    
+    try:
+        alpha=float(alpha)
+        if not (0.0<=alpha<1):
+            raise ValueError(F"Parameter alpha must be between 0 and 1")
+    except ValueError as e:
+        print(f"Error: {e}")
+    except TypeError:
+        	print("Error: alpha parameter should be a float")
+        
+    try:
+        warming_period=int(warming_period)
+        if not (1<warming_period<=min_len):
+            raise ValueError(F"Warming period should be bigger than 1 and be less that the length of the dataset")
+                     
+    except ValueError as e:
+        print(f"Error: {e}")        
+    except TypeError:
+        	print("Error: warming period must be an integer")
+            
+            
+            
+    learning_rate=lambda t: 4.0/((t+warming_period)**((2*smoothness)/(2*smoothness+1)))
+    regularization=lambda t: 1/(4*(t+warming_period)**(1/(2*smoothness+1)))
 
         
-    rulsif_= RULSIF(data_ref[:t_0],data_test[:t_0],alpha=alpha)
+    rulsif_= RULSIF(data_ref[:warming_period],data_test[:warming_period],alpha=alpha)
     lamb=rulsif_.gamma
     kernel=rulsif_.kernel
     dictionary=[]
@@ -58,7 +93,7 @@ def OLRE(data_ref,data_test,t_0,learning_rate=None,regularization=None,alpha=0.1
     list_dictionaries=[]
     list_thetas=[]
      
-    t=t_0
+    t=warming_period
     new_point_ref=1.*data_ref[t]
     new_point_test=1.*data_test[t]
 
@@ -76,7 +111,7 @@ def OLRE(data_ref,data_test,t_0,learning_rate=None,regularization=None,alpha=0.1
 
     dictionary=np.vstack(dictionary)
     
-    for t in range(t_0+1,len(data_ref)):
+    for t in range(1,min_len):
 
         new_point_ref=1.*data_ref[t]
         new_point_test=1.*data_test[t]
@@ -96,20 +131,9 @@ def OLRE(data_ref,data_test,t_0,learning_rate=None,regularization=None,alpha=0.1
         dictionary=1.*dictionary
         
         kernel.dictionary=transform_data(dictionary)
-        list_dictionaries.append(1.*kernel.dictionary)
         list_thetas.append(1.*theta)    
         
-    return list_dictionaries,list_thetas,kernel
-
-
-
-
-
-
-
-
-
-
+    return kernel.dictionary,list_thetas,kernel
 
 
 
