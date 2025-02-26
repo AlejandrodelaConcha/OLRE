@@ -1,4 +1,4 @@
-# OLRE Online Likelihod-Ratio Estimator. 
+# OLRE Online Likelihood-Ratio Estimator. 
 Quantifying the difference between two probability density functions, *p* and *q*, using available data, is a fundamental problem in Statistics and Machine Learning. A usual approach for addressing this problem is the density/likelihood-ratio estimation (LRE) between *p* and *q*, which—to our best knowledge—has been investigated mainly for the offline case. In this repository, we introduce a new framework for **online non-parametric LRE (OLRE)** for the setting where pairs of i.i.d. observations *(xₜ ∼ p, xₜ' ∼ q)* are observed over time. The non-parametric nature of our approach has the advantage of being agnostic to the forms of *p* and *q*. Moreover, we capitalize on the recent advances in **Kernel Methods** and functional minimization to develop an estimator that can be efficiently updated online.
 
 <div align="center">
