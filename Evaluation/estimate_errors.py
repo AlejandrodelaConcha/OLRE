@@ -189,6 +189,36 @@ def estimate_errors_online(results_directory,list_dictionaries,list_theta,list_k
             list_errors_PEARSON.append(np.array(errors_PEARSON))
             list_L2_distance_PEARSON.append(np.array(L2_distance))
             
+    elif experiment==4: 
+        d=2
+        data_ref_validation,data_test_validation=data_experiment_4(N=10000,d=d)
+        cov_blocks=np.eye(int(2*d))
+        for i in range(int(d)):
+            cov_blocks[2*i,2*i+1]=0.8
+            cov_blocks[2*i+1,2*i]=0.8
+        for i in range(len(list_dictionaries)):
+            print(i)
+            errors_PEARSON,L2_distance=error_plot(data_ref_validation,data_test_validation,list_dictionaries[i],list_theta[i],list_kernel[i],
+                                             real_likelihood=lambda x: real_relative_likelihood_ratio_highdimension(x,cov_blocks=cov_blocks,d=d,alpha=alpha),
+                                             alpha=alpha)
+            list_errors_PEARSON.append(np.array(errors_PEARSON))
+            list_L2_distance_PEARSON.append(np.array(L2_distance))
+            
+    elif experiment==5: 
+        d=10
+        data_ref_validation,data_test_validation=data_experiment_4(N=10000,d=d)
+        cov_blocks=np.eye(int(2*d))
+        for i in range(int(d)):
+            cov_blocks[2*i,2*i+1]=0.8
+            cov_blocks[2*i+1,2*i]=0.8
+        for i in range(len(list_dictionaries)):
+            print(i)
+            errors_PEARSON,L2_distance=error_plot(data_ref_validation,data_test_validation,list_dictionaries[i],list_theta[i],list_kernel[i],
+                                             real_likelihood=lambda x: real_relative_likelihood_ratio_highdimension(x,cov_blocks=cov_blocks,d=d,alpha=alpha),
+                                             alpha=alpha)
+            list_errors_PEARSON.append(np.array(errors_PEARSON))
+            list_L2_distance_PEARSON.append(np.array(L2_distance))
+         
     error_L2_distance={"error": list_errors_PEARSON,"L2":list_L2_distance_PEARSON}  
     
     file_name=file_name.replace(".","")    
@@ -260,7 +290,46 @@ def estimate_errors_offline(results_directory,list_dictionaries,list_thetas,list
                                                  real_likelihood=lambda x:  r_normal_mixture(x,alpha=alpha),method=method,alpha=alpha)
             list_errors.append(np.array(errors_))
             list_L2_distance.append(np.array(L2_distance_))
+            
+    elif experiment==4:
+        d=2
+        data_ref_validation,data_test_validation=data_experiment_4(N=10000,d=d)
+        cov_blocks=np.eye(int(2*d))
+        for i in range(int(d)):
+            cov_blocks[2*i,2*i+1]=0.8
+            cov_blocks[2*i+1,2*i]=0.8
         
+        if method=="KLIEP":
+            alpha=0
+        
+        for i in range(len(list_thetas)):
+            print(i)
+ 
+            errors_,L2_distance_=error_plot_offline(data_ref_validation,data_test_validation,list_dictionaries[i],list_sigmas[i],list_thetas[i],
+                                                 real_likelihood=lambda x: real_relative_likelihood_ratio_highdimension(x,cov_blocks=cov_blocks,d=d,alpha=alpha),
+                                                 method=method,alpha=alpha)
+            list_errors.append(np.array(errors_))
+            list_L2_distance.append(np.array(L2_distance_))    
+            
+    elif experiment==5:
+        d=10
+        data_ref_validation,data_test_validation=data_experiment_4(N=10000,d=d)
+        cov_blocks=np.eye(int(2*d))
+        for i in range(int(d)):
+            cov_blocks[2*i,2*i+1]=0.8
+            cov_blocks[2*i+1,2*i]=0.8
+        
+        if method=="KLIEP":
+            alpha=0
+        
+        for i in range(len(list_thetas)):
+            print(i)
+ 
+            errors_,L2_distance_=error_plot_offline(data_ref_validation,data_test_validation,list_dictionaries[i],list_sigmas[i],list_thetas[i],
+                                                 real_likelihood=lambda x: real_relative_likelihood_ratio_highdimension(x,cov_blocks=cov_blocks,d=d,alpha=alpha),
+                                                 method=method,alpha=alpha)
+            list_errors.append(np.array(errors_))
+            list_L2_distance.append(np.array(L2_distance_))        
             
         
     error_={"error": list_errors,"L2":list_L2_distance}  

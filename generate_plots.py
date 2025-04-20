@@ -51,7 +51,7 @@ def main(results_directory,experiment):
         
     
     alpha=0.1
-    r=0.5
+    smoothness=0.5
     
     file_name=results_directory+"/"+f"Experiment_{experiment}_errors_alpha{alpha}_smoothness{smoothness}_olre"
     file_name=file_name.replace(".","")
@@ -64,7 +64,7 @@ def main(results_directory,experiment):
         
      
     alpha=0.5
-    r=1.0
+    smoothness=1.0
      
     file_name=results_directory+"/"+f"Experiment_{experiment}_errors_alpha{alpha}_smoothness{smoothness}_olre"
     file_name=file_name.replace(".","")
@@ -73,7 +73,7 @@ def main(results_directory,experiment):
          results_dynamic_r1_alpha_05=  pickle.load(f)
            
     alpha=0.5
-    r=0.5
+    smoothness=0.5
      
     file_name=results_directory+"/"+f"Experiment_{experiment}_errors_alpha{alpha}_smoothness{smoothness}_olre"
     file_name=file_name.replace(".","")
@@ -186,7 +186,8 @@ if __name__=="__main__":
 
 
 
-
+results_directory= "C:/Users/alexd/Documents/OLRE/Results"
+experiment=4
 
 
 

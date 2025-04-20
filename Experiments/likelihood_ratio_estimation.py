@@ -30,6 +30,19 @@ def r_bivariate_normal(x,alpha):
     log_r_alpha+=stats.multivariate_normal.logpdf(x,np.zeros(2),np.array([[1,4/5],[4/5,1]]))
     return np.exp(log_r_alpha)
 
+def real_relative_likelihood_ratio_highdimension(x,cov_blocks,d=50,alpha=0.1):
+    #### This function compute the real-likelihood ratio between two multivariate gaussian distribution of dimension 2*d
+    ### Input:
+    # x: point to evaluate 
+    # alpha: regularization parameter
+    ### Output:
+    #  real-likelihood ratio evaluated at the point x
+    
+    log_r_alpha=(1-alpha)*stats.multivariate_normal.pdf(x,np.zeros(int(d*2)),cov=np.eye(int(d*2)))+alpha*stats.multivariate_normal.pdf(x,np.zeros(int(d*2)),cov=cov_blocks)
+    log_r_alpha=-1*np.log(log_r_alpha)
+    log_r_alpha+=stats.multivariate_normal.logpdf(x,np.zeros(int(d*2)),cov=cov_blocks)
+    return np.exp(log_r_alpha)
+
 def r_uniform_laplace(x,alpha):
     ### This function compares the likelihood-ratio between a laplace distribution and a uniform distribution 
     # x: point to evaluate 

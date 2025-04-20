@@ -4,9 +4,7 @@ import pickle
 
 def main(results_directory,experiment,T,n_runs,alpha,smoothness,method):   
     
-    if method=="OLRE":  
-        learning_rate=lambda t: 4.0/((t)**((2*r)/(2*r+1)))
-        regularization=lambda t: 1/(4*(t**(1/(2*r+1))))
+    if method=="OLRE": 
         file_name=results_directory+f"Experiment_{experiment}_alpha{alpha}_smoothness{smoothness}"
         file_name=file_name.replace(".","")
         run_experiments(experiment,T,alpha=alpha,smoothness=smoothness,warming_period=100,n_runs=n_runs,file_name=file_name)  

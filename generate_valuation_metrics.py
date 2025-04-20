@@ -5,7 +5,6 @@ Created on Tue Oct  4 10:00:09 2022
 @author: 33768
 """
 
-
 from Models import *
 from Evaluation import *
 import matplotlib.pyplot as plt

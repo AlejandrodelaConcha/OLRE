@@ -44,6 +44,31 @@ def data_experiment_3(N,p=None):
     data_ref=np.random.multivariate_normal(mean=np.array([0,0]),cov=10*np.eye(2),size=N)
     
     return data_ref,data_test
+
+def data_experiment_4(N,d=50):
+    
+    ######### This function implements experiments 2B and 2C from the paper.
+
+    ####### Input
+    # N_ref: number of observations from p_v.
+    # N_test: number of observations from q_v.
+    # d: the final dimension of the input space is 2 * d.
+
+    ###### Output 
+    # data_ref: represents observations coming from p.
+    # data_test: represents observations coming from q.
+
+    data_ref=np.random.multivariate_normal(mean=np.zeros(int(d*2)),cov=np.eye(int(d*2)),size=N) 
+    
+    cov_blocks=np.eye(int(d*2))
+    for i in range(int(d)):
+        cov_blocks[2*i,2*i+1]=0.8
+        cov_blocks[2*i+1,2*i]=0.8
+
+    data_test=np.random.multivariate_normal(mean=np.zeros(int(d*2)),cov=cov_blocks,size=N)
+
+    return data_ref,data_test
+
           
 
 def run_experiments(experiment,T,warming_period,smoothness=0.5,alpha=0.1,n_runs=50,file_name=None):
@@ -95,6 +120,22 @@ def run_experiments(experiment,T,warming_period,smoothness=0.5,alpha=0.1,n_runs=
             list_dictionaries_PEARSON.append(copy.deepcopy(dictionary_PEARSON))
             list_theta_PEARSON.append(copy.deepcopy(theta_PEARSON))
             list_Kernel_PEARSON.append(copy.deepcopy(Kernel_PEARSON))
+            
+        if experiment==4:
+            data_ref,data_test=data_experiment_4(N=T,d=2)
+            dictionary_PEARSON,theta_PEARSON,Kernel_PEARSON=OLRE(data_ref,data_test,warming_period=warming_period,smoothness=smoothness,alpha=alpha)
+            theta_PEARSON=[theta_PEARSON[j] for j in range(0,len(theta_PEARSON),100)]
+            list_dictionaries_PEARSON.append(copy.deepcopy(dictionary_PEARSON))
+            list_theta_PEARSON.append(copy.deepcopy(theta_PEARSON))
+            list_Kernel_PEARSON.append(copy.deepcopy(Kernel_PEARSON))
+            
+        if experiment==5:
+            data_ref,data_test=data_experiment_4(N=T,d=10)
+            dictionary_PEARSON,theta_PEARSON,Kernel_PEARSON=OLRE(data_ref,data_test,warming_period=warming_period,smoothness=smoothness,alpha=alpha)
+            theta_PEARSON=[theta_PEARSON[j] for j in range(0,len(theta_PEARSON),100)]
+            list_dictionaries_PEARSON.append(copy.deepcopy(dictionary_PEARSON))
+            list_theta_PEARSON.append(copy.deepcopy(theta_PEARSON))
+            list_Kernel_PEARSON.append(copy.deepcopy(Kernel_PEARSON))
 
         results_PEARSON={"dictionaries": list_dictionaries_PEARSON,"thetas":list_theta_PEARSON,"Kernel":list_Kernel_PEARSON}
                       
@@ -131,6 +172,12 @@ def run_experiments_offline(experiment,T,alpha=None,t_0=100,n_runs=50,file_name=
             
         if experiment==3:
            data_ref,data_test=data_experiment_3(N=T+t_0)
+           
+        if experiment==4:
+           data_ref,data_test=data_experiment_4(N=T+t_0,d=2)  
+           
+        if experiment==5:
+            data_ref,data_test=data_experiment_4(N=T+t_0,d=10)  
       
         if method=="KLIEP":
             dictionaries_,thetas_,sigmas_=klieps(data_ref,data_test)
